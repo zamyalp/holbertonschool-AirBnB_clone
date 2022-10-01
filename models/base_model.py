@@ -25,13 +25,13 @@ class BaseModel:
                             value, timedate_format)
         else:
             self.id = str(uuid.uuid4())
-            self.creted_at = datetime.datetime.today()
-            self.updated_at = datetime.datetime.strptime()
+            self.created_at = datetime.datetime.today()
+            self.updated_at = datetime.datetime.today()
 
     def __str__(self) -> str:
         """string ovveride for basemodel"""
         return "[{}] ({}) {}".format(
-            self.__class__.__name__, self.id, slef.__dict__)
+            self.__class__.__name__, self.id, self.__dict__)
 
     def save(self):
         """updates to current time"""
