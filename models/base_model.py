@@ -1,46 +1,47 @@
 #!/usr/bin/python3
 """base model for Airbnb clone"""
-import uuid
-import json
-import datetime
+
+from uuid import uuid4
+from datetime import datetime
 import models
 
 
 class BaseModel:
     """created class for base model"""
+
     def __init__(self, *args, **kwargs):
-        """public instance attributes for BaseModel"""
-        timedate_format = '%Y-%m-%dT%H:%M:%S.%f'
-        if kwargs is not None and kwargs != {}:
+        """initiliazer"""
+
+        if kwargs: 
             for key, value in kwargs.items():
-                if key == "__class__":
-                    break
-                elif key == "id":
-                    self.id = value
-                elif key == "created_at":
-                    self.created_at = datetime.datetime.strptime(
-                        value, timedate_format)
-                elif key == "updated_at":
-                    self.updated_at = datetime.datetime.strptime(
-                            value, timedate_format)
+                if "created_at" in kwargs:
+                    self.created_at = datetime.strptime(
+                        kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                if "updated_at" in kwargs:
+                    self.updated_at = datetime.strptime(
+                        kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
+                if key != "__class__":
+                    setattr(self, key, value)
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.datetime.today()
-            self.updated_at = datetime.datetime.today()
+            self.id = str(uuid4())
+            self.updated_at = self.created_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self) -> str:
         """string ovveride for basemodel"""
-        return "[{}] ({}) {}".format(
-            self.__class__.__name__, self.id, self.__dict__)
+
+        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
         """updates to current time"""
-        self.updated_at = datetime.datetime.today()
+
+        self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """retunr a dcitionary of class instance"""
-        my_dict = self.__dict__.copy()
-        my_dict["__class__"] = self.__class__.__name__
-        my_dict["created_at"] = self.created_at.isoformat()
-        my_dict["updated_at"] = self.updated_at.isoformat()
-        return my_dict
+
+        return dict(self.__dict__,
+                __class__=self.__class__.__name__,
+                updated_at=str(self.updated_at.isoformat()),
+                created_at=str(self.created_at.isoformat()))
