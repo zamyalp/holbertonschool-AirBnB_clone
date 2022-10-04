@@ -11,7 +11,8 @@ from models.review import Review
 from models.place import Place
 
 
-
+class_keys = {"BaseModel": BaseModel, "Amenity": Amenity, "City": City,
+        "Place": Place, "Review", "State": State, "User": User}
 
 
 class FileStorage:
